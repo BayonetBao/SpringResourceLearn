@@ -925,7 +925,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			//如果不是抽象的、单例的、非懒加载的就实例化
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				//判断bean是否实现了FactoryBean接口，这里可以不看
+				//判断bean是否实现了FactoryBean接口
 				if (isFactoryBean(beanName)) {
 					//给实现了FactoryBean接口的类的beanName加上&前缀，比如&factoryBeanDemo,但此时容器中并不存在此名字的BeanDefinition
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);

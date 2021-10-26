@@ -284,10 +284,15 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
 				if (candidate instanceof AnnotatedBeanDefinition) {
+					//注解填充
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
+					//Scope属性的proxyMode在这里填充，如果proxyMode = ScopedProxyMode.TARGET_CLASS，这里会注册两个BeanDefinition
+					//对象，一个是扫描到的原始对象，一个是实现了FactoryBean接口的对象，FactoryBean接口的getObject方法会生成原始对象的代理
+					//对象，这样spring中就会有两个同类的 对象，依赖注入时会报错，为了解决这个问题，applyScopedProxyMode这个方法中把原始对象
+					//的优先级设置的低，这样就会忽略原始对象，注入代理对象，容器就不会报错
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					//BeanDefinition注册

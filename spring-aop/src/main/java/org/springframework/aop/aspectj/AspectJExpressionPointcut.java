@@ -195,6 +195,7 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 		}
 		if (this.pointcutExpression == null) {
 			this.pointcutClassLoader = determinePointcutClassLoader();
+			//这里找到真正的pointCut表达式
 			this.pointcutExpression = buildPointcutExpression(this.pointcutClassLoader);
 		}
 		return this.pointcutExpression;

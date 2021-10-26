@@ -191,7 +191,7 @@ class ConfigurationClassParser {
 						"Failed to parse configuration class [" + bd.getBeanClassName() + "]", ex);
 			}
 		}
-		//这行代码不能忽视
+		//这行代码不能忽视,对实现了DeferredImportSelector接口并且Import进容器的的类方法调用
 		this.deferredImportSelectorHandler.process();
 	}
 
@@ -252,6 +252,7 @@ class ConfigurationClassParser {
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		do {
 			//核心代码，认真读
+			//返回的sourceClass为configClass的子类，一直处理完所有的子类，把子类中的注解信息叶一起封装到父类中
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
@@ -312,7 +313,7 @@ class ConfigurationClassParser {
 					if (bdCand == null) {
 						bdCand = holder.getBeanDefinition();
 					}
-					//判断是否是候选的BeanDefinition，如果是又parse
+					//判断是否是候选的BeanDefinition，如果是又parse,这个checkConfigurationClassCandidate方法负责标记full或者little
 					if (ConfigurationClassUtils.checkConfigurationClassCandidate(bdCand, this.metadataReaderFactory)) {
 						parse(bdCand.getBeanClassName(), holder.getBeanName());
 					}
@@ -321,7 +322,9 @@ class ConfigurationClassParser {
 		}
 
 		// Process any @Import annotations
-		//处理@Import注解，getImports(sourceClass)获取类上面的@Import注解并封装成SourceClass
+		//处理@Import注解，getImports(sourceClass)获取类上面的@Import注解并封装成SourceClass，ImportSelector、ImportBeanDefinitionRegistrar
+		//这里只是收集注解信息，收集完没有处理，将正在处理的类和该类的@Import注解信息收集到该类的configClass类中，configClass是对类本身和类部分注解的封装
+		//configClass、sourceClass都是对正在处理类的封装
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
@@ -392,7 +395,7 @@ class ConfigurationClassParser {
 				else {
 					this.importStack.push(configClass);
 					try {
-						//candidate 子，configClass 父，candidate是configClass的内部内，相当于子类
+						//candidate 子要解析的类的内部类，configClass 父要解析的类，candidate是configClass的内部内，相当于子类
 						processConfigurationClass(candidate.asConfigClass(configClass), filter);
 					}
 					finally {

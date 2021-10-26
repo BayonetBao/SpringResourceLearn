@@ -1888,7 +1888,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			mbd.isFactoryBean = true;
 		}
 		else {
-			//从缓存里面拿FactoryBean的实例，不是BeanFactory的一级缓存，而是FactoryBean专门的缓存
+			//从缓存里面拿FactoryBean中getObject方法返回的实例，不是BeanFactory的一级缓存，而是FactoryBean专门的缓存
+			//这个缓存和一级缓存里面有一个相同的beanName，这里的缓存的beanName对应FactoryBean中getObject方法返回的实
+			// 例，而一级缓存对应FactoryBean本身这个实例
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {

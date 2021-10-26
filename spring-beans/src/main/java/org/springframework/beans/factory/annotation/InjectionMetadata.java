@@ -116,7 +116,7 @@ public class InjectionMetadata {
 				(checkedElements != null ? checkedElements : this.injectedElements);
 		if (!elementsToIterate.isEmpty()) {
 			for (InjectedElement element : elementsToIterate) {
-				//ÊôÐÔ×¢Èë
+				//å±žæ€§æ³¨å…¥ï¼ŒAutowiredAnnotationBeanPostProcessor
 				element.inject(target, beanName, pvs);
 			}
 		}

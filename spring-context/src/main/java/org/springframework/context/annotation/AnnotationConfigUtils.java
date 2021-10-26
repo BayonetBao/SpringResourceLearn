@@ -276,6 +276,7 @@ public abstract class AnnotationConfigUtils {
 			return definition;
 		}
 		boolean proxyTargetClass = scopedProxyMode.equals(ScopedProxyMode.TARGET_CLASS);
+		//创建BeanDefinition
 		return ScopedProxyCreator.createScopedProxy(definition, registry, proxyTargetClass);
 	}
 

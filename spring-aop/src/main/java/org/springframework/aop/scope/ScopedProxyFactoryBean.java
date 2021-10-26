@@ -82,7 +82,7 @@ public class ScopedProxyFactoryBean extends ProxyConfig
 		this.targetBeanName = targetBeanName;
 		this.scopedTargetSource.setTargetBeanName(targetBeanName);
 	}
-
+	//因为实现了BeanFactoryAware接口，所以该类实例化会调用这个方法
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		if (!(beanFactory instanceof ConfigurableBeanFactory)) {
@@ -107,17 +107,19 @@ public class ScopedProxyFactoryBean extends ProxyConfig
 		}
 
 		// Add an introduction that implements only the methods on ScopedObject.
+		//最后会通过这个scopedTargetSource的getTarget方法获取被代理对象
 		ScopedObject scopedObject = new DefaultScopedObject(cbf, this.scopedTargetSource.getTargetBeanName());
+		//这里是代理对象的advice
 		pf.addAdvice(new DelegatingIntroductionInterceptor(scopedObject));
 
 		// Add the AopInfrastructureBean marker to indicate that the scoped proxy
 		// itself is not subject to auto-proxying! Only its target bean is.
 		pf.addInterface(AopInfrastructureBean.class);
-
+		//这里给被代理对象赋值
 		this.proxy = pf.getProxy(cbf.getBeanClassLoader());
 	}
 
-
+	//实现了FactoryBean接口，spring依赖注入getObjectType方法返回的实例类型时会触发这个方法，也就是注入原始实例时会触发这个代理对象生产类的getObject方法
 	@Override
 	public Object getObject() {
 		if (this.proxy == null) {

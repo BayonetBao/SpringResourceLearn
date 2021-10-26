@@ -62,6 +62,7 @@ public abstract class ScopedProxyUtils {
 
 		// Create a scoped proxy definition for the original bean name,
 		// "hiding" the target bean in an internal target definition.
+		//生成代理类的BeanDefinition，如果生成代理，则返回的是这个代理类的BeanDefinition，被代理对象的BeanDefinition被封装到代理类BeanDefinition中
 		RootBeanDefinition proxyDefinition = new RootBeanDefinition(ScopedProxyFactoryBean.class);
 		proxyDefinition.setDecoratedDefinition(new BeanDefinitionHolder(targetDefinition, targetBeanName));
 		proxyDefinition.setOriginatingBeanDefinition(targetDefinition);
@@ -78,6 +79,7 @@ public abstract class ScopedProxyUtils {
 		}
 
 		// Copy autowire settings from original bean definition.
+		//设置代理实例的优先级高于被代理实例，当被代理实例和代理实例同时出现时，采用代理实例依赖注入
 		proxyDefinition.setAutowireCandidate(targetDefinition.isAutowireCandidate());
 		proxyDefinition.setPrimary(targetDefinition.isPrimary());
 		if (targetDefinition instanceof AbstractBeanDefinition) {
@@ -85,10 +87,12 @@ public abstract class ScopedProxyUtils {
 		}
 
 		// The target bean should be ignored in favor of the scoped proxy.
+		//设置被代理实例的优先级低于代理实例，当被代理实例和代理实例同时出现时，采用代理实例依赖注入
 		targetDefinition.setAutowireCandidate(false);
 		targetDefinition.setPrimary(false);
 
 		// Register the target bean as separate bean in the factory.
+		//原始目标对象也会注册
 		registry.registerBeanDefinition(targetBeanName, targetDefinition);
 
 		// Return the scoped proxy definition as primary bean definition

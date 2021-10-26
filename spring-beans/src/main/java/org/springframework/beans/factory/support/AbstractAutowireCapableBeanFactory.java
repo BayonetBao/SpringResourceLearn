@@ -436,7 +436,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			//代理调用AbstractAutoProxyCreator的postProcessAfterInitialization方法
 			//AbstractAutoProxyCreator的实现类:
-			// 1、AspectJAutoProxyBeanDefinitionParser(使用配置文件时，通过在xml里面配置<aop:aspectj-autoproxy>标签)
+			// 1、AspectJAutoProxyBeanDefinitionParser(使用配置文件时，通过在xml里面配置<aop:aspectj-autoproxy>标签)，通过AspectJAutoProxyBeanDefinitionParser注册2
 			// 2、AnnotationAwareAspectJAutoProxyCreator(使用注解，Import注解导入)
 			Object current = processor.postProcessAfterInitialization(result, beanName);
 			if (current == null) {
@@ -514,6 +514,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			//TargetSource接口的运用，可以用一个类实现该接口，然后在里面getTarget方法定义实例化对象的方式，然后返回
+			//也就说明不需要spring帮助我们实例化对象
+			//这里直接返回代理对象，代理对象中包含实例本身的实例化方法（自己定义，可以直接new，可以从复制的BeanFactory（复制的工厂中没有
+			// AOP入口类，不会生成代理）中getBean）
+			//前提是需要一个InstantiationAwareBeanPostProcessor类型实例，AOP入口类为该类型，可以直接使用，然后设置TargetSourceCreator
+			//属性（注意时序，必须提前设置），可以自己继承AbstractBeanFactoryBasedTargetSourceCreator，实现createBeanFactoryBasedTargetSource方
+			//法
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -610,7 +617,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			//将创建x的整个工厂添加到二级缓存
+			//将创建x的整个工厂添加到三级缓存
 			//为什么不添加x的半成品bean？
 			//因为工厂包含x半成品bean，且可以对其进一步修改（例如aop），而单独的x半成品bean不行
 			//三级缓存和二级缓存其实就是保存x的两种形式，二级缓存相当于保存全量，三级缓存保存半量
@@ -1141,6 +1148,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					//可能提前生成代理
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
@@ -1166,6 +1174,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
 		for (InstantiationAwareBeanPostProcessor bp : getBeanPostProcessorCache().instantiationAware) {
+			//可能提前生成代理，看这个类AbstractAutoProxyCreator的postProcessBeforeInstantiation方法
 			Object result = bp.postProcessBeforeInstantiation(beanClass, beanName);
 			if (result != null) {
 				return result;

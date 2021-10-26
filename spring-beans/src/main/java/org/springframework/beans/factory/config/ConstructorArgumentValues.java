@@ -355,6 +355,7 @@ public class ConstructorArgumentValues {
 		Assert.isTrue(index >= 0, "Index must not be negative");
 		ValueHolder valueHolder = getIndexedArgumentValue(index, requiredType, requiredName);
 		if (valueHolder == null) {
+			
 			valueHolder = getGenericArgumentValue(requiredType, requiredName, usedValueHolders);
 		}
 		return valueHolder;

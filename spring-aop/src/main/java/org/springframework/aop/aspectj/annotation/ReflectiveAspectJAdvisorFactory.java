@@ -135,7 +135,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 				new LazySingletonAspectInstanceFactoryDecorator(aspectInstanceFactory);
 
 		List<Advisor> advisors = new ArrayList<>();
-		//这里循环没有@Pointcut注解的方法
+		//这里循环没有@Pointcut注解的方法,getAdvisorMethods(aspectClass)中进行方法排序
 		for (Method method : getAdvisorMethods(aspectClass)) {
 			// Prior to Spring Framework 5.2.7, advisors.size() was supplied as the declarationOrderInAspect
 			// to getAdvisor(...) to represent the "current position" in the declared methods list.
@@ -175,6 +175,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 		List<Method> methods = new ArrayList<>();
 		ReflectionUtils.doWithMethods(aspectClass, methods::add, adviceMethodFilter);
 		if (methods.size() > 1) {
+			//按照注解先后顺序+自然顺序排序
 			methods.sort(adviceMethodComparator);
 		}
 		return methods;
@@ -226,7 +227,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 	private AspectJExpressionPointcut getPointcut(Method candidateAdviceMethod, Class<?> candidateAspectClass) {
 		//从候选的增强方法里面candidateAdviceMethod 找有注解
 		//PointCut.class Around.class Before.class After.class AfterReturning.class AfterThrowing.class
-		//并把注解信息封装成AspectJAnnotation对象
+		//并把注解信息封装成AspectJAnnotation对象，例如，@Before(value = "pc()")封装的是pc(),具体表达式还未转换
 		AspectJAnnotation<?> aspectJAnnotation =
 				AbstractAspectJAdvisorFactory.findAspectJAnnotationOnMethod(candidateAdviceMethod);
 		if (aspectJAnnotation == null) {

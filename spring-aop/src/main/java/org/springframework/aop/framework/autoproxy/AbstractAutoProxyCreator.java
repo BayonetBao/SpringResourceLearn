@@ -257,6 +257,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
+		//包装被代理的目标对象
 		TargetSource targetSource = getCustomTargetSource(beanClass, beanName);
 		if (targetSource != null) {
 			if (StringUtils.hasLength(beanName)) {
@@ -286,6 +287,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (bean != null) {
 			//先从缓存中拿
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			//三级缓存可能会提前生成代理，如果生成，则下面的逻辑不再执行
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				//缓存中没有
 				return wrapIfNecessary(bean, beanName, cacheKey);
@@ -410,6 +412,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.customTargetSourceCreators != null &&
 				this.beanFactory != null && this.beanFactory.containsBean(beanName)) {
 			for (TargetSourceCreator tsc : this.customTargetSourceCreators) {
+				//获取被代理的目标对象
 				TargetSource ts = tsc.getTargetSource(beanClass, beanName);
 				if (ts != null) {
 					// Found a matching TargetSource.
@@ -445,8 +448,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 		//把AnnotationAwareAspectJAutoProxyCreator中的某些属性copy到ProxyFactory中
 		ProxyFactory proxyFactory = new ProxyFactory();
+		//设置代理类型（JDK或者Cglib），设置参数在ThreadLocal中传递
 		proxyFactory.copyFrom(this);
-
+		//计算，防止不熟悉的人误用，例如没有接口的类配置成了JDK的动态代理，这里会自己计算并转为Cglib代理
 		if (!proxyFactory.isProxyTargetClass()) {
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
@@ -512,7 +516,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Advisor[] buildAdvisors(@Nullable String beanName, @Nullable Object[] specificInterceptors) {
 		// Handle prototypes correctly...
-		//设置自定义的MethodInterceptor和Advice，这里可以设置全局拦截器
+		//设置自定义的MethodInterceptor和Advice，这里可以设置全局拦截器，方法拦截的pointCut的match方法直接返回true
 		Advisor[] commonInterceptors = resolveInterceptorNames();
 
 		List<Object> allInterceptors = new ArrayList<>();

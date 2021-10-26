@@ -124,7 +124,8 @@ abstract class ConfigurationClassUtils {
 		}
 		//从metadata中获取Configuration注解
 		Map<String, Object> config = metadata.getAnnotationAttributes(Configuration.class.getName());
-		//如果有Configuration注解，就是完全匹配标识
+		//如果有Configuration注解，就是完全匹配标识，标记为full。如果标记为full，则会在实例化的时候
+		// 生成代理，在ConfigurationClassPostProcessor类的postProcessBeanFactory方法的enhanceConfigurationClasses方法中生成代理
 		if (config != null && !Boolean.FALSE.equals(config.get("proxyBeanMethods"))) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}

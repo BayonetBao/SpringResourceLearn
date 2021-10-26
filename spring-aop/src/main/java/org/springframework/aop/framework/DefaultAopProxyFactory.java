@@ -48,7 +48,7 @@ import org.springframework.core.NativeDetector;
 @SuppressWarnings("serial")
 public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 
-
+	//这里的config就是proxyFactory对象
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
 		if (!NativeDetector.inNativeImage() &&

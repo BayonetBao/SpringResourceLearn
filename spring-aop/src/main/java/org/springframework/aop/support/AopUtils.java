@@ -223,8 +223,8 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		//调用ClassFilter的matches方法，判断是否匹配
-		//AspectJExpressionPointcut的matches方法
+		//调用ClassFilter的matches方法，判断是否匹配，重要，看matches方法，AspectJExpressionPointcut的matches方法
+		//pc就是AspectJExpressionPointcut，AspectJExpressionPointcut的matches方法
 		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
@@ -323,8 +323,9 @@ public abstract class AopUtils {
 				// already processed
 				continue;
 			}
-			//匹配需要增强的类和方法canApply()
+			//匹配需要增强的类和方法，canApply()，判断切面candidate跟类clazz是否匹配
 			if (canApply(candidate, clazz, hasIntroductions)) {
+				//如果匹配，将切面嵌入到类里面
 				eligibleAdvisors.add(candidate);
 			}
 		}
