@@ -109,6 +109,7 @@ public abstract class AbstractFallbackTransactionAttributeSource
 		// First, see if we have a cached value.
 		Object cacheKey = getCacheKey(method, targetClass);
 		TransactionAttribute cached = this.attributeCache.get(cacheKey);
+		//先走缓存
 		if (cached != null) {
 			// Value will either be canonical value indicating there is no transaction attribute,
 			// or an actual transaction attribute.
@@ -119,8 +120,10 @@ public abstract class AbstractFallbackTransactionAttributeSource
 				return cached;
 			}
 		}
+		//缓存没有
 		else {
 			// We need to work it out.
+			//计算
 			TransactionAttribute txAttr = computeTransactionAttribute(method, targetClass);
 			// Put it in the cache.
 			if (txAttr == null) {
@@ -175,7 +178,8 @@ public abstract class AbstractFallbackTransactionAttributeSource
 		Method specificMethod = AopUtils.getMostSpecificMethod(method, targetClass);
 
 		// First try is the method in the target class.
-		//获取方法上面的@Transactional注解的属性，如果有就封装成TransactionAttribute
+		//获取方法上面的@Transactional注解的属性，如果有就封装成TransactionAttribute，是一个map，里面
+		// 是@Transactional注解的key-val值
 		TransactionAttribute txAttr = findTransactionAttribute(specificMethod);
 		if (txAttr != null) {
 			return txAttr;

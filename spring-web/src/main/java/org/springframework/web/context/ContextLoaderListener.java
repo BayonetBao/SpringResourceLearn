@@ -90,7 +90,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 * @see #contextInitialized(ServletContextEvent)
 	 * @see #contextDestroyed(ServletContextEvent)
 	 */
-	public ContextLoaderListener(WebApplicationContext context) {
+	public  ContextLoaderListener(WebApplicationContext context) {
 		super(context);
 	}
 

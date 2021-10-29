@@ -50,6 +50,7 @@ public abstract class AbstractTransactionManagementConfiguration implements Impo
 	/**
 	 * Default transaction manager, as configured through a {@link TransactionManagementConfigurer}.
 	 */
+	//该属性通过@Autowired注解自动注入
 	@Nullable
 	protected TransactionManager txManager;
 
@@ -73,6 +74,8 @@ public abstract class AbstractTransactionManagementConfiguration implements Impo
 			throw new IllegalStateException("Only one TransactionManagementConfigurer may exist");
 		}
 		TransactionManagementConfigurer configurer = configurers.iterator().next();
+		//通过注入TransactionManagementConfigurer类型实例，调用其annotationDrivenTransactionManager方法
+		// 注入txManager（该做法不常用）
 		this.txManager = configurer.annotationDrivenTransactionManager();
 	}
 

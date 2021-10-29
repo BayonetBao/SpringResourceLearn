@@ -120,6 +120,7 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 			@Override
 			@Nullable
 			public Object proceedWithInvocation() throws Throwable {
+				//火炬传递
 				return invocation.proceed();
 			}
 			@Override

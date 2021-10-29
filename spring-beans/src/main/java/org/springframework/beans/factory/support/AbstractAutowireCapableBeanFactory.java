@@ -621,6 +621,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			//为什么不添加x的半成品bean？
 			//因为工厂包含x半成品bean，且可以对其进一步修改（例如aop），而单独的x半成品bean不行
 			//三级缓存和二级缓存其实就是保存x的两种形式，二级缓存相当于保存全量，三级缓存保存半量
+			//getEarlyBeanReference是ObjectFactory的getObject钩子方法
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -993,6 +994,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bean the raw bean instance
 	 * @return the object to expose as bean reference
 	 */
+	//从三级缓存中获取对象时调用这个方法，这个方法可以是ObjectFactory的getObject钩子方法的实现
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {

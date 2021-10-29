@@ -59,7 +59,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	//创建事务属性处理器
+	//创建事务属性处理器，处理方法上的注解，并封装成对象
 	public TransactionAttributeSource transactionAttributeSource() {
 		return new AnnotationTransactionAttributeSource();
 	}
@@ -71,7 +71,8 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 		TransactionInterceptor interceptor = new TransactionInterceptor();
 		//事务属性处理器设置到advice中
 		interceptor.setTransactionAttributeSource(transactionAttributeSource);
-		//把事务管理器设置到advice中，事务管理器在父类中定义，可以提前定义
+		//把事务管理器设置到advice中，事务管理器在父类中定义，事务管理器可以通过注入设置（该做法不常用），如果有就用
+		// 如果为空，这里不影响程序，只需要在Spring容器中实例化一个TransactionManager类型，后面会自动匹配
 		if (this.txManager != null) {
 			interceptor.setTransactionManager(this.txManager);
 		}

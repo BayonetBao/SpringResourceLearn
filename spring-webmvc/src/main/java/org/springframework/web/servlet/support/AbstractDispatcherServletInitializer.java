@@ -85,6 +85,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		Assert.notNull(servletAppContext, "createServletApplicationContext() must not return null");
 		//创建DispatcherServlet对象，把springMVC上下文设置到DispatcherServlet中
 		//tomcat启动首先会调用所有Servlet的init方法，所以看DispatcherServlet的init方法
+		//FrameworkServlet的内部类ContextRefreshListener是一个事件发布，在容器启动完后发布，给DispatcherServlet属性赋值
 		FrameworkServlet dispatcherServlet = createDispatcherServlet(servletAppContext);
 		Assert.notNull(dispatcherServlet, "createDispatcherServlet(WebApplicationContext) must not return null");
 		dispatcherServlet.setContextInitializers(getServletApplicationContextInitializers());
