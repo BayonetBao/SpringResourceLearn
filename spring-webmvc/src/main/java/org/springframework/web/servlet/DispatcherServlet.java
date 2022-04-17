@@ -485,6 +485,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	@Override
 	protected void onRefresh(ApplicationContext context) {
+		//这里初始化DispatcherServlet里面的成员
 		initStrategies(context);
 	}
 

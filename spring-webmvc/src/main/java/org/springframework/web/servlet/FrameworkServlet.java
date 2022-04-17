@@ -559,7 +559,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
-		//从servet上下文中获取spring的上下文对象
+		//从servet上下文中获取spring的上下文对象,这个是Spring的容器对象，将此对象设置为MVC的parent
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
@@ -844,6 +844,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		this.refreshEventReceived = true;
 		synchronized (this.onRefreshMonitor) {
+			//这里初始化DispatcherServlet里面的成员
 			onRefresh(event.getApplicationContext());
 		}
 	}

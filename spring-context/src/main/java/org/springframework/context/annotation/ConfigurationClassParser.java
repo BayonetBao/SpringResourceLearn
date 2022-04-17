@@ -807,12 +807,14 @@ class ConfigurationClassParser {
 		 */
 		public void handle(ConfigurationClass configClass, DeferredImportSelector importSelector) {
 			DeferredImportSelectorHolder holder = new DeferredImportSelectorHolder(configClass, importSelector);
+			//第一个DeferredImportSelector类型在这里调用，剩下的会先记录，后调用
 			if (this.deferredImportSelectors == null) {
 				DeferredImportSelectorGroupingHandler handler = new DeferredImportSelectorGroupingHandler();
 				handler.register(holder);
 				handler.processGroupImports();
 			}
 			else {
+				//剩下的会先记录
 				this.deferredImportSelectors.add(holder);
 			}
 		}
@@ -845,6 +847,10 @@ class ConfigurationClassParser {
 			//调用getImportGroup方法，返回实现了Group接口的类
 			Class<? extends Group> group = deferredImport.getImportSelector().getImportGroup();
 			//建立实现了Group接口类和DeferredImportSelectorGrouping的映射关系
+			//如果实现了DeferredImportSelector接口的类没有重写getImportGroup方法，grouping中封装的是实现了DeferredImportSelector接口的类
+			// 那么最后调用selectImports方法就是调用实现父类ImportSelector的selectImports方法
+			//如果实现了DeferredImportSelector接口的类重写了getImportGroup方法，grouping中封装的是实现了DeferredImportSelector接口内部接口Group
+			// 的类那么最后调用selectImports方法就是调用实现Group接口类的
 			DeferredImportSelectorGrouping grouping = this.groupings.computeIfAbsent(
 					(group != null ? group : deferredImport),
 					key -> new DeferredImportSelectorGrouping(createGroup(group)));
@@ -878,6 +884,7 @@ class ConfigurationClassParser {
 		}
 
 		private Group createGroup(@Nullable Class<? extends Group> type) {
+			//判断实现了DeferredImportSelector接口的类中是否有实现了Group类型的类，没有的话给一个默认的
 			Class<? extends Group> effectiveType = (type != null ? type : DefaultDeferredImportSelectorGroup.class);
 			return ParserStrategyUtils.instantiateClass(effectiveType, Group.class,
 					ConfigurationClassParser.this.environment,

@@ -428,6 +428,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				}
 				if (resource.isReadable()) {
 					try {
+						//封装了类的所有元数据对象，用它可以得到.class文件中的所有信息
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
 						//判断是否是要过滤的注解，默认是@Component注解
 						if (isCandidateComponent(metadataReader)) {
